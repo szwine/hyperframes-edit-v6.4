@@ -65,12 +65,14 @@ if not exist "%HF_RUNTIME%\bin\node.exe" (
     powershell -Command "& {
         $ProgressPreference = 'SilentlyContinue'
         $url = 'https://nodejs.org/dist/v22.13.1/node-v22.13.1-win-x64.zip'
-        $zip = \"$env:TEMP\\node.zip\"
+        $zip = \"$env:TEMP\node.zip\"
         Invoke-WebRequest -Uri $url -OutFile $zip -UseBasicParsing
-        Expand-Archive -Path $zip -DestinationPath \"$env:TEMP\\node_extract\" -Force
-        $exe = Get-ChildItem -Path \"$env:TEMP\\node_extract\" -Recurse -Filter node.exe | Where-Object { $_.FullName -match 'node-v' } | Select-Object -First 1
-        $binDir = \"$env:USERPROFILE\\.workbuddy\\hyperframes-edit-runtime\\bin\"
-        Copy-Item -Path $exe.FullName -Destination \"$binDir\\node.exe\" -Force
+        Expand-Archive -Path $zip -DestinationPath \"$env:TEMP\node_extract\" -Force
+        # 复制整个 node 发行目录（含 node.exe + npm + node_modules）到 bin\
+        $srcDir = Get-ChildItem -Path \"$env:TEMP\node_extract\" -Directory | Where-Object { $_.Name -match '^node-v' } | Select-Object -First 1
+        $binDir = \"$env:USERPROFILE\.workbuddy\hyperframes-edit-runtime\bin\"
+        New-Item -ItemType Directory -Force -Path $binDir | Out-Null
+        Copy-Item -Path \"$($srcDir.FullName)\*\" -Destination $binDir -Recurse -Force
     }"
     if exist "%HF_RUNTIME%\bin\node.exe" (
         echo   [OK] Node.js 安装完成
@@ -111,17 +113,25 @@ echo.
 echo [6/6] 安装 hyperframes CLI 和技能文件...
 if not exist "%HF_RUNTIME%\hyperframes-install\node_modules\hyperframes\dist\cli.js" (
     echo   正在下载 hyperframes 渲染引擎...
-    "%HF_RUNTIME%\bin\node.exe" "%HF_RUNTIME%\bin\node_modules\npm\bin\npm-cli.js" install -g hyperframes 2>nul
-    if errorlevel 1 (
-        echo   尝试直接下载 npm 包...
+    if exist "%HF_RUNTIME%\bin\node_modules\npm\bin\npm-cli.js" (
+        "%HF_RUNTIME%\bin\node.exe" "%HF_RUNTIME%\bin\node_modules\npm\bin\npm-cli.js" install --prefix "%HF_RUNTIME%\hyperframes-install" hyperframes 2>nul
+    )
+    if not exist "%HF_RUNTIME%\hyperframes-install\node_modules\hyperframes\dist\cli.js" (
+        echo   尝试备用方式下载 hyperframes...
         powershell -Command "& {
             $ProgressPreference = 'SilentlyContinue'
             $url = 'https://registry.npmjs.org/hyperframes/-/hyperframes-latest.tgz'
-            $tgz = \"$env:TEMP\\hyperframes.tgz\"
+            $tgz = \"$env:TEMP\hyperframes.tgz\"
             Invoke-WebRequest -Uri $url -OutFile $tgz -UseBasicParsing
-            New-Item -ItemType Directory -Force -Path \"$env:USERPROFILE\\.workbuddy\\hyperframes-edit-runtime\\hyperframes-install\" | Out-Null
-            Copy-Item $tgz \"$env:USERPROFILE\\.workbuddy\\hyperframes-edit-runtime\\hyperframes-install\\package.tgz\"
+            New-Item -ItemType Directory -Force -Path \"$env:USERPROFILE\.workbuddy\hyperframes-edit-runtime\hyperframes-install\" | Out-Null
+            Copy-Item $tgz \"$env:USERPROFILE\.workbuddy\hyperframes-edit-runtime\hyperframes-install\package.tgz\"
         }"
+        echo   [WARN] hyperframes 需手动安装：进入 hyperframes-install 目录运行 npm install
+    )
+    if exist "%HF_RUNTIME%\hyperframes-install\node_modules\hyperframes\dist\cli.js" (
+        echo   [OK] hyperframes 渲染引擎安装完成
+    ) else (
+        echo   [WARN] hyperframes 未自动安装完成，请稍后手动处理
     )
 )
 

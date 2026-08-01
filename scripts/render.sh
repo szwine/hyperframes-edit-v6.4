@@ -23,8 +23,8 @@ if [ -z "$CHROME" ]; then echo "FATAL: 找不到 chrome-headless-shell"; exit 1;
 export HYPERFRAMES_BROWSER_PATH="$CHROME"
 export PRODUCER_LOW_MEMORY_MODE=false
 
-# Node：install.bat 会把 node.exe 装到 $RT/bin/node/node.exe
-NODE="$RT/bin/node/node.exe"
+# Node：install.bat 会把整个 node 发行版复制到 $RT/bin/（node.exe + npm）
+NODE="$RT/bin/node.exe"
 if [ ! -x "$NODE" ]; then NODE=$(command -v node || echo ""); fi
 CLI="$RT/hyperframes-install/node_modules/hyperframes/dist/cli.js"
 SRCSRC="src_fixed.mp4"
