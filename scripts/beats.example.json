@@ -1,0 +1,28 @@
+{
+  "_comment": "富图层内容配置（导演版 v6.4 范例 · 关键词增强 + win真实说话秒数同步 + 关叠字幕）。⚠️ 复制本文件为 beats.json 改内容即可复用。核心原则：① 每个 beat 用 win:[t1,t2] 直接给【真实说话秒数】（优先用 faster-whisper 从音频提取，与剪映字幕同源；动效=说话起+0.1s ~ 说话止+0.35s，绝不比字幕快）。若无真实时间轴，可退用 cap(绑 timeline.json 句索引) 或 s/e(手填秒)，但 v6.4 默认【推荐 win】。② 内容=关键词标题+简图/图标/表格，【绝不重复口播长句】——动效是给字幕做'增强显示'，不是第二套字幕。③ 布局只走 top/left/right/table(避开面部中央与底部字幕区)；不要用 center/split(会压脸)。④ 运镜=关键词出现时一次性推近强调再回稳。html 属性用单引号。字段：id 唯一 / win[起,止]秒(真实说话) / layout(top|left|right|table) / html 面板 / cam 运镜{scale} / scrim 压暗 / extra 额外 GSAP(可选)。⑤ 若原片已自带字幕，务必在 config.json 设 show_caption:false 关掉本工具的字幕层，避免两排字幕时间不一致。",
+  "beats": [
+    {"id":"b0","win":[2.1,4.5],"layout":"top",
+     "html":"<div class='kicker'>开场 · 一句话钩子</div><div class='tagrow'><span class='ico'>🔥</span>痛点关键词 · 只亮不念</div>"},
+
+    {"id":"b1","win":[8.3,11.0],"layout":"left",
+     "html":"<div class='t-title'>处境 / 问题</div><div class='row'><span class='ico'>⚠️</span><b>关键词A</b></div><div class='row'><span class='ico'>💸</span><b>关键词B</b></div><div class='row'><span class='ico'>📑</span><b>关键词C</b></div>"},
+
+    {"id":"b2","win":[15.0,17.5],"layout":"top",
+     "html":"<div class='bigstat'><span class='num' data-to='80'>0</span><span class='pct'>块</span></div><div class='tagrow'><span class='ico'>💰</span>数字对比 · 自动滚动</div>"},
+
+    {"id":"b3","win":[22.0,27.0],"layout":"table","scrim":true,
+     "html":"<div class='kicker'>模块 · 一张表说清</div><div class='cmp-box'><table class='cmp'><tr><th>模块</th><th>AI 自动干</th></tr><tr><td><span class='ico'>🛰️</span>拓客</td><td>自动跑</td></tr><tr><td><span class='ico'>🤖</span>智能体</td><td>自动接待</td></tr><tr><td><span class='ico'>💬</span>客服</td><td>智能回复</td></tr></table></div>"},
+
+    {"id":"b4","win":[33.0,37.0],"layout":"top","scrim":true,
+     "html":"<div class='kicker'>内核公式</div><div class='split-wrap'><div class='sp node'>🔧 工具</div><div class='sp-arr'>=</div><div class='sp node now'>🧠 经验内核</div></div>"},
+
+    {"id":"b5","win":[44.0,48.0],"layout":"right",
+     "html":"<div class='card-h'>变现路 ①</div><div class='card-t'><span class='ico'>📺</span>创作者分成</div><div class='card-d'>按播放量分钱 💰</div>"},
+
+    {"id":"b6","win":[60.0,72.0],"layout":"table","scrim":true,
+     "html":"<div class='kicker'>以前 vs 现在</div><div class='cmp-box'><table class='cmp'><tr><th>维度</th><th class='old'>旧</th><th class='now'>FengAI</th></tr><tr><td><span class='ico'>⏱️</span>耗时</td><td class='old'>3–4 小时</td><td class='now'><span class='num' data-to='20'>0</span> 分</td></tr><tr><td><span class='ico'>👥</span>人力</td><td class='old'>3–5 人</td><td class='now'>0 人</td></tr></table></div>"},
+
+    {"id":"b7","win":[88.0,93.0],"layout":"top",
+     "html":"<div class='cta-btn'>评论区留「关键词」👇</div><div class='id-badge'>我是老李 · 48 岁 · 0 基础学 AI</div>"}
+  ]
+}

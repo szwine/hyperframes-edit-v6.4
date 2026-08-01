@@ -1,0 +1,35 @@
+{
+  "resolution": [1080, 1920],
+  "show_caption": true,
+  "caption_top": "9%",
+  "colors": {
+    "primary": "#00f0ff",
+    "magenta": "#ff4dff",
+    "green": "#39ff14",
+    "amber": "#ffcc00",
+    "text": "#ffffff"
+  },
+  "corner_badge": {
+    "enabled": true,
+    "corner": "tr",
+    "glyph": "bolt",
+    "label": "AI口播",
+    "spin_sec": 7
+  },
+  "hud": {
+    "sweep": true,
+    "progress": true,
+    "dots": true,
+    "scanlines": true,
+    "corners": true,
+    "vignette": true
+  },
+  "karaoke": true,
+  "hero_map": {
+    "1": ["icon_ai.png", "AI"],
+    "14": ["icon_robot.png", "陪伴"],
+    "18": ["icon_health.png", "健康"],
+    "20": ["icon_exo.png", "助行"]
+  },
+  "_comment": "show_caption(默认true)=是否叠加本工具生成的字幕层(.cap)。⚠️ 关键：若你的口播视频【已自带字幕】(如剪映导出时已烧录/内嵌字幕)，务必把它设为 false，否则成片会出现两排字幕、且时间不一致(这是v6.3前动效'抢跑/不同步'的隐藏根因)。v6.4 已将此设为显式开关，工程里建 config.json 写 {\"show_caption\":false} 即可关掉。"
+}
