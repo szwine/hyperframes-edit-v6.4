@@ -6,7 +6,8 @@ echo   �����Ʒ ^| �Զ���װ��������
 echo ============================================================
 echo.
 
-set "HF_RUNTIME=%USERPROFILE%\.workbuddy\hyperframes-edit-runtime"
+REM 默认装 D 盘（避开 C 盘用户名含特殊字符路径带来的隐患）；若机器无 D 盘则回退 USERPROFILE
+if exist "D:\" (set "HF_RUNTIME=D:\hyperframes-edit-runtime") else (set "HF_RUNTIME=%USERPROFILE%\.workbuddy\hyperframes-edit-runtime")
 set "HF_ROOT=%~dp0"
 set "SKILL_DST=%USERPROFILE%\.workbuddy\skills\hyperframes-edit"
 
