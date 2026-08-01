@@ -63,13 +63,19 @@ version: "6.4.0"
 - **字幕/叠加区在顶部**（98% 帧的顶部带变化最剧）→ 印证"顶部赛博字幕"。
 - 音频近连续，无配乐留白 → 叠加层只加视觉，不动声音。
 
-## Runtime（预装，固定路径）
-都在 `C:/Users/ho'li/.workbuddy/hyperframes-edit-runtime/`：
+## Runtime（安装脚本 install.bat 自动装，自动定位）
+运行时根目录（install.bat 会设置环境变量 `HF_RUNTIME`，默认）：
+```
+%USERPROFILE%\.workbuddy\hyperframes-edit-runtime\
+```
 - `ffmpeg/bin/ffmpeg.exe` + `ffprobe.exe`（BtbN 版）
 - `hyperframes-install/` — `hyperframes` CLI（`node_modules/hyperframes/dist/cli.js`）
 - `chrome-headless-shell/win64-*/chrome-headless-shell.exe`（渲染用 Chromium）
+- `bin/node/node.exe`（Node.js LTS）
 
-Node：`C:/Users/ho'li/.workbuddy/binaries/node/versions/22.22.2/node.exe`
+> 📌 分发版路径自动定位：`render.sh` / `build_html.py` 优先读 `HF_RUNTIME` 环境变量，
+> 没有则回退到 `~/.workbuddy/hyperframes-edit-runtime`，粉丝机器无需改任何路径。
+
 GSAP：技能自带 `scripts/gsap.min.js`（生成时会自动拷到工程目录，离线安全）。
 
 ## 调用流程（Mode A 富图层导演版，默认）
@@ -77,7 +83,7 @@ GSAP：技能自带 `scripts/gsap.min.js`（生成时会自动拷到工程目录
 对每支视频建一个工程目录（如 `./hf_project/`），把源片和稿子放进去，依次跑：
 
 ### Step 1 — 收齐输入
-- 把口播录像复制为 `src.mp4`（**务必用纯 ASCII 文件名**，中文/含 `ho'li` 撇号的路径会让 ffmpeg 静默失败）。
+- 把口播录像复制为 `src.mp4`（**务必用纯 ASCII 文件名**，中文/含撇号的路径会让 ffmpeg 静默失败）。
 - 把口播稿按"自然停顿"切成一句一行，存成 `script_segments.txt`（UTF-8）。
 - 复制 `scripts/beats.example.json` 为 `beats.json`，按你的内容改 `beats[]`（每个 beat = 一个关键动效时刻：`win` 真实说话秒数、`layout` 布局、`html` 面板（关键词增强，不重复字幕）、`cam` 运镜、`scrim/extra` 可选）。**这是唯一需要动的内容文件**。
   - **`win:[t1,t2]` 必填（v6.4 推荐）**：直接写【真实说话秒数】。先用 faster-whisper 从 `_audio.wav` 提取（见 Step 4b）得到每句真实起止，再填；或退用 `cap`（绑 timeline.json 句索引）/ `s/e`（手填秒）。动效窗口 = `win[0]+0.1 ~ win[1]+0.35`，略晚不抢跑。
@@ -85,7 +91,7 @@ GSAP：技能自带 `scripts/gsap.min.js`（生成时会自动拷到工程目录
 
 ### Step 2 — 转码 + 抽音频（HEVC/高帧率必须）
 ```bash
-FF="C:/Users/ho'li/.workbuddy/hyperframes-edit-runtime/ffmpeg/bin/ffmpeg.exe"
+FF="$HF_RUNTIME/ffmpeg/bin/ffmpeg.exe"   # 无 HF_RUNTIME 时用 ~/.workbuddy/hyperframes-edit-runtime/ffmpeg/bin/ffmpeg.exe
 "$FF" -y -i src.mp4 -c:v libx264 -crf 18 -preset fast -pix_fmt yuv420p -r 30 -g 30 \
       -keyint_min 30 -movflags +faststart -c:a copy src_fixed.mp4
 "$FF" -y -i src.mp4 -vn -ac 1 -ar 16000 _audio.wav
@@ -105,7 +111,7 @@ python scripts/make_timeline.py _silence.txt script_segments.txt   # -> timeline
 ### Step 4b —（v6.4 推荐）whisper 提取真实说话时间轴（根治"动效抢跑"）
 > ⚠️ v6.4 同步关键：上面 make_timeline 切出的"字幕时间轴"是**静音检测估算**，系统性偏早，不能直接用来对动效。要根治"动效抢跑"，用 faster-whisper 提取**真实说话时间**（与剪映字幕同源）：
 ```bash
-VENV="$HOME/.workbuddy/binaries/python/envs/default"
+VENV="$HOME/.workbuddy/binaries/python/envs/default"  # 如无此环境，先 pip install faster-whisper 到你的 Python
 "$VENV/Scripts/python.exe" - > timeline_whisper.json 2>&1 <<'PY'
 from faster_whisper import WhisperModel
 m = WhisperModel('small','cpu')
